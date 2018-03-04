@@ -4,6 +4,7 @@ from flask import Flask , jsonify , request
 import os
 
 azur_list = [ 'Tape_mon' , 'KEY_DVD' , 'AV_MD' , 'Tuner_DAB' , 'Aux_phono' , 'KEY_CD' , 'KEY_MUTE' , 'KEY_VOLUMEUP' , 'KEY_VOLUMEDOWN' ]
+azur_cmd = 'none'
 
 app = Flask( __name__ )
 
@@ -45,7 +46,7 @@ def loungelights():
 
 @app.route( '/api/azur/' , methods = [ 'POST' ] )
 def azur():
-	global azur_list
+	global azur_list , azur_cmd
 
 	my_op = request.form.get( 'command' )
 	
@@ -53,24 +54,34 @@ def azur():
 
 	if my_op in azur_list:
 		os.system( 'irsend SEND_ONCE AZUR ' +my_op )
+		azur_cmd = my_op
 		return 'Sent '+my_op
 	else:
+		azur_cmd = 'Error, no command ' + my_op
 		return 'No such command. Try\n' + '\n'.join( azur_list ) + '\n'
-
 	
 
 
 @app.route( '/api/loungelights/' , methods = [ 'GET' ] )
 def status():
 	global loungelights_state
-    
+    	
+	state_string = 'Current lounge lighting status: '
+	
 	if loungelights_state:
 		print( 'Returning on' )
-		return on_str
+		state_string += 'on.'
 	else:
 		print( 'Returning off' )
-		return off_str
+		state_string += 'off.'
 
+	return state_string	
+
+@app.route( '/api/azur/' , methods = [ 'GET' ] )
+def azur_status():
+	global azur_cmd
+	return 'Last command sent: '+azur_cmd
+ 
 if __name__ == '__main__':
 	app.run( debug = True , host = '0.0.0.0' )
 
