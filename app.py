@@ -3,21 +3,23 @@
 from flask import Flask , jsonify , request
 import os
 
+azur_list = [ 'Tape_mon' , 'KEY_DVD' , 'AV_MD' , 'Tuner_DAB' , 'Aux_phono' , 'KEY_CD' , 'KEY_SLEEP' , 'KEY_MUTE' , 'KEY_POWER'  , 'KEY_POWER' , 'KEY_VOLUMEUP' , 'KEY_VOLUMEDOWN' ]
+
 app = Flask( __name__ )
 
 off_str = 'OFF'
 on_str = 'ON'
 
-my_state = False
+loungelights_state = False
 
 @app.route( '/' )
 
 def index():
 	return "Hello, World!"
 
-@app.route( '/api/play/' , methods = [ 'POST' ] )
-def play():
-	global my_state, off_str , on_str
+@app.route( '/api/loungelights/' , methods = [ 'POST' ] )
+def loungelights():
+	global loungelights_state, off_str , on_str
    
 	#my_op = request.data.decode( 'utf-8' )
 	
@@ -27,12 +29,12 @@ def play():
 
 	if my_op == off_str:
 		print( 'Off' )
-		my_state = False
+		loungelights_state = False
 		os.system( "irsend SEND_ONCE VARILIGHT KEY_POWER2" )
 		my_response = 200    
 	elif my_op == on_str:
 		print( 'On' )
-		my_state = True
+		loungelights_state = True
 		os.system( "irsend SEND_ONCE VARILIGHT KEY_POWER" )
 		my_response = 200
 	else:
@@ -41,11 +43,28 @@ def play():
     
 	return 'response' , my_response
 
-@app.route( '/api/play/' , methods = [ 'GET' ] )
+@app.route( '/api/azur/' , methods = [ 'POST' ] )
+def azur():
+	global azur_list
+
+	my_op = request.form.get( 'command' )
+	
+	print( 'Request info:' , my_op )
+
+	if my_op in azur_list:
+		os.system( 'irsend SEND_ONCE AZUR ' +my_op )
+		return 'Sent '+my_op
+	else:
+		return 'No such command. Try\n' + '\n'.join( azur_list ) + '\n'
+
+	
+
+
+@app.route( '/api/loungelights/' , methods = [ 'GET' ] )
 def status():
-	global my_state
+	global loungelights_state
     
-	if my_state:
+	if loungelights_state:
 		print( 'Returning on' )
 		return on_str
 	else:
