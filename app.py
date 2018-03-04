@@ -3,7 +3,7 @@
 from flask import Flask , jsonify , request
 import os
 
-azur_list = [ 'Tape_mon' , 'KEY_DVD' , 'AV_MD' , 'Tuner_DAB' , 'Aux_phono' , 'KEY_CD' , 'KEY_SLEEP' , 'KEY_MUTE' , 'KEY_POWER'  , 'KEY_POWER' , 'KEY_VOLUMEUP' , 'KEY_VOLUMEDOWN' ]
+azur_list = [ 'Tape_mon' , 'KEY_DVD' , 'AV_MD' , 'Tuner_DAB' , 'Aux_phono' , 'KEY_CD' , 'KEY_MUTE' , 'KEY_VOLUMEUP' , 'KEY_VOLUMEDOWN' ]
 
 app = Flask( __name__ )
 
