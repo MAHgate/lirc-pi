@@ -6,15 +6,15 @@ import os
 class Action( object ):
 	def __init__( self , name ):
 		self.name = name
-		self.code = 'SEND_ONCE'
+		self.send = 'SEND_ONCE'
 		self.key = name
 		self.option_list = []
 
 	def set_key( self , key ):
 		self.key = key
 
-	def set_code( self , code ):
-		self.send = code
+	def set_send( self , send ):
+		self.send = send
 
 class Device( object ):
 	def __init__( self , name ):
@@ -41,7 +41,7 @@ Ellie = Room( 'Ellie' )
 
 room_list = [ Lounge , Hallway , Ellie ]
 
-Azur = Device( 'AZUR' )
+Azur = Device( 'Azur' )
 
 azur_list = [ 'Tape_mon' , 'KEY_DVD' , 'AV_MD' , 'Tuner_DAB' , 'Aux_phono' , 'KEY_CD' , 'KEY_MUTE' , 'KEY_VOLUMEUP' , 'KEY_VOLUMEDOWN' ]
 
@@ -51,7 +51,6 @@ for a in azur_list:
 	Azur.add_action( Action( a ) )
 
 device_list = [ Azur ]
-
 
 app = Flask( __name__ )
 
@@ -131,15 +130,13 @@ def azur_status():
  
 @app.route( '/<room>/<devicename>/' , methods = [ 'GET' ] )
 def device_status( room , devicename ):
-	return cmd + '\n'
+	return 'You chose location ' + room + ' and device ' + devicename
 	
 @app.route( '/<room_name>/<device_name>/' , methods = [ 'POST' ] )
 def apply_action( room_name , device_name ):
 	global device_list , room_list
 
 	my_op = request.form.get( 'command' )
-
-	print( room_name , device_name , my_op )
 	
 	my_room = None
 
@@ -156,35 +153,21 @@ def apply_action( room_name , device_name ):
 	if my_room and my_device:
 		my_action = None
 		
-		for a in my_device.actions:
+		for a in my_device.action_list:
 			if a.name == my_op:
 				my_action = a
 		
 		if my_action:
-			cmd = 'irsend ' + my_action.code + ' ' + my_device.name + ' ' + my_action.key
-			os.system( cmd )
+			cmd = my_action.send + ' ' + my_device.code + ' ' + my_action.code + ' '.join( my_action.option_list )
 			print( cmd )
-			return cmd + '\n'
+			return 1
 		else:
-			return 'Action ' + my_op + ' not understood.\n'
+			return 0
 
-	else:	
-		return_str = ''
-		if my_room:
-			return_str += 'Room: ' + room_name + '\n'
-		else:
-			return_str += 'No such room: ' + room_name + '\n'
-		
-		if my_device:
-			return_str += 'Device: ' + device_name + '\n'
-		else:
-			return_str += 'No such device: ' + device_name + '\n' 		
-
-		return return_str
-
+	else:
+		return 0	
 
 if __name__ == '__main__':
 	app.run( debug = True , host = '0.0.0.0' )
 	
-
 
