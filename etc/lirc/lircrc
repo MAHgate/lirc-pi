@@ -1,22 +1,26 @@
 begin
-    	button = KEY_RIGHT
+    	remote = SQUEEZE
+	button = key_forward
     	prog = irexec
     	config = curl "http://192.168.0.114/cgi-bin/controls.cgi?COMMAND=track_next"
 end
 
 begin
-	button = KEY_LEFT
+	remote = SQUEEZE
+	button = key_rewind
 	prog = irexec
 	config = curl "http://192.168.0.114/cgi-bin/controls.cgi?COMMAND=track_prev"
 end
 
 begin
+	remote = SQUEEZE
 	button = KEY_PLAY
 	prog = irexec
 	config = curl "http://192.168.0.114/cgi-bin/controls.cgi?COMMAND=play"
 end
 
 begin
+	remote = SQUEEZE
 	button = KEY_PAUSE
 	prog = irexec
 	config = curl "http://192.168.0.114/cgi-bin/controls.cgi?COMMAND=stop"
