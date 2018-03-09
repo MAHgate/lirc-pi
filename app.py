@@ -3,6 +3,8 @@
 from flask import Flask , jsonify , request
 import os
 
+# Lots of actions
+
 class Action( object ):
 	def __init__( self , name ):
 		self.name = name
@@ -15,6 +17,8 @@ class Action( object ):
 
 	def set_code( self , code ):
 		self.send = code
+
+# So we can label devices
 
 class Device( object ):
 	def __init__( self , name ):
@@ -29,17 +33,22 @@ class Device( object ):
 	def add_room( self , room ):
 		self.room = room
 
+# So we can label rooms
+
 class Room( object ):
 	def __init__( self ,name ):
 		self.name = name
 		self.full_name = name
 
+# Create our rooms (not sure if this helps)
 
 Lounge = Room( 'Lounge' )
 Hallway = Room( 'Hallway' )
 Ellie = Room( 'Ellie' )
 
 room_list = [ Lounge , Hallway , Ellie ]
+
+# Set up Azur AMP ( we should do this with XML )
 
 Azur = Device( 'AZUR' )
 
@@ -50,20 +59,29 @@ azur_cmd = 'none'
 for a in azur_list:
 	Azur.add_action( Action( a ) )
 
+# Put devices in alist
+
 device_list = [ Azur ]
 
+# Start the App
 
 app = Flask( __name__ )
+
+# On and Off jokes
 
 off_str = 'OFF'
 on_str = 'ON'
 
 loungelights_state = False
 
+# Root response is just a Hello World
+
 @app.route( '/' )
 
 def index():
 	return "Hello, World!"
+
+# My loungelights controller
 
 @app.route( '/api/loungelights/' , methods = [ 'POST' ] )
 def loungelights():
@@ -91,6 +109,8 @@ def loungelights():
     
 	return 'response' , my_response
 
+# Original Azur routine. Now unnecessary
+
 @app.route( '/api/azur/' , methods = [ 'POST' ] )
 def azur():
 	global azur_list , azur_cmd
@@ -108,6 +128,7 @@ def azur():
 		return 'No such command. Try\n' + '\n'.join( azur_list ) + '\n'
 	
 
+# Loungelights state
 
 @app.route( '/api/loungelights/' , methods = [ 'GET' ] )
 def status():
@@ -124,15 +145,21 @@ def status():
 
 	return state_string	
 
+# More redundant Azur
+
 @app.route( '/api/azur/' , methods = [ 'GET' ] )
 def azur_status():
 	global azur_cmd
 	return 'Last command sent: '+azur_cmd
  
+# Default response to a get is just to return the last successful command
+
 @app.route( '/<room>/<devicename>/' , methods = [ 'GET' ] )
 def device_status( room , devicename ):
 	return cmd + '\n'
-	
+
+# Trying to get a bit more generic
+
 @app.route( '/<room_name>/<device_name>/' , methods = [ 'POST' ] )
 def apply_action( room_name , device_name ):
 	global device_list , room_list
@@ -182,6 +209,7 @@ def apply_action( room_name , device_name ):
 
 		return return_str
 
+# Nice trick
 
 if __name__ == '__main__':
 	app.run( debug = True , host = '0.0.0.0' )
