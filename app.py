@@ -82,6 +82,9 @@ def azur_status():
 	global azur_cmd
 	return 'Last command sent: '+azur_cmd
  
+@app.route( '/<room>/<devicename>' , methods = [ 'GET' ] )
+def device_status( room , devicename ):
+	return 'You chose location ' + room + ' and device ' + devicename
+	
 if __name__ == '__main__':
 	app.run( debug = True , host = '0.0.0.0' )
-
